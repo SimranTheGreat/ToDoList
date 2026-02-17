@@ -3,7 +3,7 @@ import { setMode } from '../store/Mode';
 import type { AppDispatch } from '../store/store';
 import { useDispatch } from 'react-redux';
 import { useState } from 'react';
-
+import { addTask, editTask } from '../store/Task';
 export default function AddTaskForm() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -14,6 +14,15 @@ export default function AddTaskForm() {
   }
   function chgdesc(event: React.ChangeEvent<HTMLTextAreaElement>) {
     setDesc(event.target.value);
+  }
+  function add() {
+    dispatch(
+      addTask({
+        title: title,
+        desc: desc,
+      }),
+    );
+    navigate('/home');
   }
   return (
     <div style={styles.container}>
@@ -41,7 +50,9 @@ export default function AddTaskForm() {
           Cancel
         </button>
 
-        <button style={styles.addBtn}>ADD</button>
+        <button style={styles.addBtn} onClick={add}>
+          ADD
+        </button>
       </div>
     </div>
   );
