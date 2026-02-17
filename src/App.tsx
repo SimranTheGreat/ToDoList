@@ -10,6 +10,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/add-task" element={<AddTaskHome />} />
+        <Route path="/edit" element={<Home />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>

@@ -13,8 +13,17 @@ type TaskState = {
   tasks: Task[];
 };
 
+const loadTasks = (): Task[] => {
+  try {
+    const data = localStorage.getItem('tasks');
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+};
+
 const initialState: TaskState = {
-  tasks: [],
+  tasks: loadTasks(),
 };
 
 const taskSlice = createSlice({
@@ -23,7 +32,10 @@ const taskSlice = createSlice({
   reducers: {
     addTask(state, action: PayloadAction<{ title: string; desc: string }>) {
       const newTask = {
-        id: state.tasks.length,
+        id:
+          state.tasks.length > 0
+            ? state.tasks[state.tasks.length - 1].id + 1
+            : 0,
         title: action.payload.title,
         desc: action.payload.desc,
         status: 'Pending',
