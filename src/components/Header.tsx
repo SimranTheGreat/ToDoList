@@ -1,11 +1,9 @@
 import { useSelector } from 'react-redux';
 import type { RootState } from './../store/store';
-import { useEffect } from 'react';
 export default function Header() {
   const mode = useSelector((state: RootState) => state.mode.mode);
 
   let title = 'TO-DO APP';
-
   if (mode === 'add') title = 'Add Task';
   if (mode === 'edit') title = 'Edit Task';
   return (

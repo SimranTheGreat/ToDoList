@@ -1,14 +1,27 @@
 import { useNavigate } from 'react-router-dom';
 import { setMode } from '../store/Mode';
-import type { AppDispatch } from '../store/store';
-import { useDispatch } from 'react-redux';
+import type { AppDispatch, RootState } from '../store/store';
+import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import { addTask, editTask } from '../store/Task';
+import StatusDropdown from './StatusDropdown';
 export default function AddTaskForm() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const [title, setTittle] = useState<string>('');
-  const [desc, setDesc] = useState<string>('');
+  const mode = useSelector((state: RootState) => state.mode.mode);
+  const selectedTask = useSelector(
+    (state: RootState) => state.selectedTask.task,
+  );
+  const [title, setTittle] = useState<string>(
+    mode === 'edit' ? (selectedTask?.title ?? '') : '',
+  );
+  const [status, setStatus] = useState<string>(
+    mode === 'edit' ? (selectedTask?.status ?? '') : '',
+  );
+  const [desc, setDesc] = useState<string>(
+    mode === 'edit' ? (selectedTask?.desc ?? '') : '',
+  );
+
   function chgtitle(event: React.ChangeEvent<HTMLInputElement>) {
     setTittle(event.target.value);
   }
@@ -24,6 +37,21 @@ export default function AddTaskForm() {
     );
     navigate('/home');
   }
+  function update() {
+    if (!selectedTask) return;
+
+    dispatch(
+      editTask({
+        id: selectedTask.id,
+        title,
+        desc,
+        status,
+        time: selectedTask.time,
+      }),
+    );
+    navigate('/home');
+  }
+
   return (
     <div style={styles.container}>
       <input
@@ -39,6 +67,9 @@ export default function AddTaskForm() {
         value={desc}
         onChange={chgdesc}
       />
+      {mode === 'edit' && (
+        <StatusDropdown value={status} onChange={setStatus} />
+      )}
       <div style={styles.buttonRow}>
         <button
           style={styles.cancelBtn}
@@ -49,10 +80,15 @@ export default function AddTaskForm() {
         >
           Cancel
         </button>
-
-        <button style={styles.addBtn} onClick={add}>
-          ADD
-        </button>
+        {mode === 'edit' ? (
+          <button style={styles.addBtn} onClick={update}>
+            Update
+          </button>
+        ) : (
+          <button style={styles.addBtn} onClick={add}>
+            ADD
+          </button>
+        )}
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { AppDispatch } from '../store/store';
 import { deleteTask } from '../store/Task';
+import { setMode } from '../store/Mode';
+import { setSelectedTask } from '../store/selectedTask';
 type Props = {
   task: Task;
   n: number;
@@ -27,7 +29,14 @@ export default function TaskTemplate(props: Props) {
       </div>
 
       <div style={styles.actions}>
-        <button style={styles.iconButton} onClick={() => navigate('/Edit')}>
+        <button
+          style={styles.iconButton}
+          onClick={() => {
+            dispatch(setMode({ mode: 'edit' }));
+            dispatch(setSelectedTask(props.task));
+            navigate('/Edit');
+          }}
+        >
           ✏️
         </button>
         <button
