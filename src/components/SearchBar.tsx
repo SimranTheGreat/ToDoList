@@ -1,9 +1,14 @@
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
-import { useState } from 'react';
+import { useState, type SetStateAction, type Dispatch } from 'react';
 import TaskList from './TaskList';
 
-export default function SearchBar() {
+type Props = {
+  isSearch: boolean;
+  setIsSearch: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function SearchBar(props: Props) {
   const tasks = useSelector((state: RootState) => state.task.tasks);
   const [search, setSearch] = useState('');
 
@@ -28,18 +33,26 @@ export default function SearchBar() {
             placeholder="Search To-Do by title, description or status"
             style={styles.input}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              props.setIsSearch(true);
+            }}
           />
 
           {search && (
-            <button style={styles.clearButton} onClick={() => setSearch('')}>
+            <button
+              style={styles.clearButton}
+              onClick={() => {
+                props.setIsSearch(false);
+                setSearch('');
+              }}
+            >
               ✕
             </button>
           )}
         </div>
       </div>
-
-      <TaskList tasks={filteredTasks} />
+      {props.isSearch && <TaskList tasks={filteredTasks} />}
     </>
   );
 }
@@ -67,7 +80,7 @@ const styles = {
     height: '40px',
     borderRadius: '6px',
     border: '1px solid #d0d5dd',
-    padding: '0 36px 0 36px', // space for icon + clear
+    padding: '0 36px 0 36px',
     fontSize: '14px',
     outline: 'none',
   },
