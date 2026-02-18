@@ -1,42 +1,53 @@
 import { useNavigate } from 'react-router-dom';
-import { setMode } from '../store/Mode';
 import type { AppDispatch, RootState } from '../store/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { addTask, editTask } from '../store/Task';
 import StatusDropdown from './StatusDropdown';
-export default function AddTaskForm() {
+
+export default function AddEditForm() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const mode = useSelector((state: RootState) => state.mode.mode);
+
   const selectedTask = useSelector(
     (state: RootState) => state.selectedTask.task,
   );
-  const [title, setTittle] = useState<string>(
-    mode === 'edit' ? (selectedTask?.title ?? '') : '',
-  );
-  const [status, setStatus] = useState<string>(
-    mode === 'edit' ? (selectedTask?.status ?? '') : '',
-  );
-  const [desc, setDesc] = useState<string>(
-    mode === 'edit' ? (selectedTask?.desc ?? '') : '',
-  );
+
+  const [title, setTitle] = useState('');
+  const [status, setStatus] = useState('');
+  const [desc, setDesc] = useState('');
+
+  /* ---- Sync local form state with selectedTask ---- */
+  useEffect(() => {
+    if (selectedTask) {
+      setTitle(selectedTask.title);
+      setStatus(selectedTask.status);
+      setDesc(selectedTask.desc);
+    } else {
+      setTitle('');
+      setStatus('');
+      setDesc('');
+    }
+  }, [selectedTask]);
 
   function chgtitle(event: React.ChangeEvent<HTMLInputElement>) {
-    setTittle(event.target.value);
+    setTitle(event.target.value);
   }
+
   function chgdesc(event: React.ChangeEvent<HTMLTextAreaElement>) {
     setDesc(event.target.value);
   }
+
   function add() {
     dispatch(
       addTask({
-        title: title,
-        desc: desc,
+        title,
+        desc,
       }),
     );
     navigate('/home');
   }
+
   function update() {
     if (!selectedTask) return;
 
@@ -49,6 +60,7 @@ export default function AddTaskForm() {
         time: selectedTask.time,
       }),
     );
+
     navigate('/home');
   }
 
@@ -67,20 +79,15 @@ export default function AddTaskForm() {
         value={desc}
         onChange={chgdesc}
       />
-      {mode === 'edit' && (
-        <StatusDropdown value={status} onChange={setStatus} />
-      )}
+
+      {selectedTask && <StatusDropdown value={status} onChange={setStatus} />}
+
       <div style={styles.buttonRow}>
-        <button
-          style={styles.cancelBtn}
-          onClick={() => {
-            dispatch(setMode({ mode: 'home' }));
-            navigate('/home');
-          }}
-        >
+        <button style={styles.cancelBtn} onClick={() => navigate('/home')}>
           Cancel
         </button>
-        {mode === 'edit' ? (
+
+        {selectedTask ? (
           <button style={styles.addBtn} onClick={update}>
             Update
           </button>
@@ -116,7 +123,6 @@ const styles = {
     boxSizing: 'border-box' as const,
     marginBottom: '16px',
   },
-
   description: {
     width: '366px',
     height: '71px',
@@ -139,7 +145,6 @@ const styles = {
     justifyContent: 'space-between',
     marginTop: '24px',
   },
-
   cancelBtn: {
     width: '110px',
     height: '40px',
@@ -152,7 +157,6 @@ const styles = {
     color: '#034EA2',
     cursor: 'pointer',
   },
-
   addBtn: {
     width: '110px',
     height: '40px',

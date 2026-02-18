@@ -23,4 +23,5 @@ const selectedTaskSlice = createSlice({
 });
 
 export const { setSelectedTask, clearSelectedTask } = selectedTaskSlice.actions;
+
 export default selectedTaskSlice.reducer;

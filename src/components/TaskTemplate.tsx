@@ -6,22 +6,44 @@ import type { AppDispatch } from '../store/store';
 import { deleteTask } from '../store/Task';
 import { setMode } from '../store/Mode';
 import { setSelectedTask } from '../store/selectedTask';
+
 type Props = {
   task: Task;
   n: number;
 };
 
+const statusColors: Record<string, string> = {
+  Pending: '#BDBDBD',
+  'In Progress': '#F2994A',
+  Completed: '#27AE60',
+};
+
 export default function TaskTemplate(props: Props) {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+
   return (
     <div style={styles.container}>
       <div style={styles.row}>
         <div style={styles.todoIcon}>{props.n + 1}</div>
 
         <div style={styles.textBlock}>
-          <div style={styles.title}>{props.task.title}</div>
+          <div style={styles.titleRow}>
+            <div style={styles.title}>{props.task.title}</div>
+
+            <div style={styles.status}>
+              <span
+                style={{
+                  ...styles.statusDot,
+                  backgroundColor: statusColors[props.task.status] || '#BDBDBD',
+                }}
+              />
+              {props.task.status}
+            </div>
+          </div>
+
           <div style={styles.desc}>{props.task.desc}</div>
+
           <div style={styles.date}>
             {new Date(props.task.time).toDateString()}
           </div>
@@ -39,6 +61,7 @@ export default function TaskTemplate(props: Props) {
         >
           ✏️
         </button>
+
         <button
           style={styles.iconButton}
           onClick={() => dispatch(deleteTask(props.task.id))}
@@ -88,8 +111,14 @@ const styles: Record<string, React.CSSProperties> = {
   textBlock: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
-    maxWidth: '292px',
+    gap: '6px',
+    width: '100%',
+  },
+
+  titleRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 
   title: {
@@ -98,6 +127,22 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '14px',
     lineHeight: '14px',
     color: '#034EA2',
+  },
+
+  status: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '12px',
+    fontFamily: 'Jost, sans-serif',
+    fontWeight: 400,
+    color: '#66676B',
+  },
+
+  statusDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
   },
 
   desc: {
@@ -116,7 +161,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '12px',
     lineHeight: '12px',
     color: '#7F7F7F',
-    marginTop: '4px',
   },
 
   actions: {

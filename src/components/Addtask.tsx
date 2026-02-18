@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { setMode } from '../store/Mode';
 import type { AppDispatch } from '../store/store';
 import { useDispatch } from 'react-redux';
+import { clearSelectedTask } from '../store/selectedTask';
 export default function AddTask() {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -11,6 +12,8 @@ export default function AddTask() {
       style={styles.fab}
       onClick={() => {
         dispatch(setMode({ mode: 'add' }));
+        dispatch(clearSelectedTask());
+
         navigate('/add-task');
       }}
     >
