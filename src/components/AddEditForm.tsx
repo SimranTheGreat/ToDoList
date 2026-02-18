@@ -8,6 +8,7 @@ import StatusDropdown from './StatusDropdown';
 export default function AddEditForm() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const [error, setError] = useState<boolean>(false);
 
   const selectedTask = useSelector(
     (state: RootState) => state.selectedTask.task,
@@ -17,7 +18,6 @@ export default function AddEditForm() {
   const [status, setStatus] = useState('');
   const [desc, setDesc] = useState('');
 
-  /* ---- Sync local form state with selectedTask ---- */
   useEffect(() => {
     if (selectedTask) {
       setTitle(selectedTask.title);
@@ -39,17 +39,26 @@ export default function AddEditForm() {
   }
 
   function add() {
+    if (!title.trim() || !desc.trim()) {
+      setError(true);
+      return;
+    }
     dispatch(
       addTask({
         title,
         desc,
       }),
     );
+    setError(false);
     navigate('/home');
   }
 
   function update() {
     if (!selectedTask) return;
+    if (!title.trim() || !desc.trim()) {
+      setError(true);
+      return;
+    }
 
     dispatch(
       editTask({
@@ -60,12 +69,18 @@ export default function AddEditForm() {
         time: selectedTask.time,
       }),
     );
-
+    setError(false);
     navigate('/home');
   }
 
   return (
     <div style={styles.container}>
+      {error && (
+        <div style={styles.errorText}>
+          Title and Description cannot be empty
+        </div>
+      )}
+
       <input
         placeholder="Enter the title"
         style={styles.text}
@@ -168,5 +183,13 @@ const styles = {
     fontWeight: 400,
     color: '#FFFFFF',
     cursor: 'pointer',
+  },
+  errorText: {
+    color: '#d92d20',
+    fontSize: '12px',
+    marginTop: '8px',
+    fontFamily: 'Jost, sans-serif',
+    marginBottom: '10px',
+    marginLeft: '5px',
   },
 };
