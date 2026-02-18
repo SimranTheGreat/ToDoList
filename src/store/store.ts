@@ -3,7 +3,6 @@ import modeReducer from './Mode';
 import taskReducer from './Task';
 import selectedTaskReducer from './selectedTask';
 
-/* ---- Load selectedTask from localStorage ---- */
 const loadSelectedTask = () => {
   try {
     const stored = localStorage.getItem('selectedTask');
@@ -27,7 +26,6 @@ export const store = configureStore({
   },
 });
 
-/* ---- Persist to localStorage ---- */
 store.subscribe(() => {
   const state = store.getState();
 

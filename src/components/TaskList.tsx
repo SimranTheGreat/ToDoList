@@ -1,10 +1,10 @@
-import { useSelector } from 'react-redux';
 import TaskListCatagories from './TaskListCatagories';
-import type { RootState } from '../store/store';
-
-export default function TaskList() {
-  const tasks = useSelector((state: RootState) => state.task.tasks);
-
+import type { Task } from '../store/Task';
+type Props = {
+  tasks: Task[];
+};
+export default function TaskList(props: Props) {
+  const tasks = props.tasks;
   const pending = tasks.filter((t) => t.status === 'Pending');
   const completed = tasks.filter((t) => t.status === 'Completed');
   const inProgress = tasks.filter((t) => t.status === 'In Progress');
